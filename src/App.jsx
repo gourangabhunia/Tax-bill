@@ -560,18 +560,22 @@ export default function App() {
       );
 
       if (!response.ok) {
-        let errorMessage = "PDF generation failed.";
+       let errorMessage = "PDF generation failed.";
 
-        try {
-          const errorData = await response.json();
-          errorMessage =
-            errorData.message || errorMessage;
-        } catch {
-          // Keep default error message.
-        }
+try {
+  const errorData = await response.json();
 
-        throw new Error(errorMessage);
-      }
+  errorMessage = [
+    errorData.message,
+    errorData.error
+  ].filter(Boolean).join(": ") || errorMessage;
+
+  console.error("PDF Backend Error:", errorData);
+} catch {
+  // Keep default error message.
+}
+
+throw new Error(errorMessage);
 
       const blob = await response.blob();
 
