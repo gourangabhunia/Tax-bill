@@ -549,7 +549,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        " https://tax-bill-backend.onrender.com",
+  "https://tax-bill-backend.onrender.com/generate-pdf",
         {
           method: "POST",
           headers: {
