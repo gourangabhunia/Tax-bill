@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard,
@@ -278,10 +279,12 @@ export default function App() {
     const itemDetails = form.items.map((item) => {
       const qty = Math.max(0, Number(item.qty) || 0);
       const rate = Math.max(0, Number(item.rate) || 0);
+
       const discountPercent = Math.min(
         100,
         Math.max(0, Number(item.discount) || 0)
       );
+
       const gst = Math.min(
         100,
         Math.max(0, Number(item.gst) || 0)
@@ -549,7 +552,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-  "https://tax-bill-backend.onrender.com/generate-pdf",
+        "https://tax-bill-backend.onrender.com/generate-pdf",
         {
           method: "POST",
           headers: {
@@ -560,22 +563,28 @@ export default function App() {
       );
 
       if (!response.ok) {
-       let errorMessage = "PDF generation failed.";
+        let errorMessage = "PDF generation failed.";
 
-try {
-  const errorData = await response.json();
+        try {
+          const errorData = await response.json();
 
-  errorMessage = [
-    errorData.message,
-    errorData.error
-  ].filter(Boolean).join(": ") || errorMessage;
+          errorMessage = [
+            errorData.message,
+            errorData.error,
+          ]
+            .filter(Boolean)
+            .join(": ") || errorMessage;
 
-  console.error("PDF Backend Error:", errorData);
-} catch {
-  // Keep default error message.
-}
+          console.error(
+            "PDF Backend Error:",
+            errorData
+          );
+        } catch {
+          // Keep default error message.
+        }
 
-throw new Error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
       const blob = await response.blob();
 
@@ -594,10 +603,14 @@ throw new Error(errorMessage);
       window.URL.revokeObjectURL(url);
 
       setMessage("PDF downloaded successfully!");
+
     } catch (error) {
+      console.error("PDF Generation Error:", error);
+
       setMessage(
         error.message || "Something went wrong."
       );
+
     } finally {
       setLoading(false);
     }
@@ -1093,7 +1106,7 @@ throw new Error(errorMessage);
                         />
 
                         <SummaryRow
-                          label={`Discount (${item.discount || 0}%)`}
+                          label="Discount"
                           value={calculation.discountAmount}
                         />
 
@@ -1442,6 +1455,7 @@ throw new Error(errorMessage);
           <p className="text-sm font-semibold">
             Gouranga Bhunia
           </p>
+
           <p className="mt-1 text-xs text-slate-400">
             Administrator
           </p>
@@ -1757,6 +1771,7 @@ throw new Error(errorMessage);
 
                 <div className="flex justify-between text-sm font-semibold">
                   <span>Previous Balance</span>
+
                   <span>
                     ₹{money(form.balance.previous)}
                     {" "}
@@ -1766,6 +1781,7 @@ throw new Error(errorMessage);
 
                 <div className="flex justify-between text-sm font-bold">
                   <span>Current Balance</span>
+
                   <span>
                     ₹{money(Math.abs(calculations.balance))}
                     {calculations.balance >= 0 ? " Dr" : " Cr"}

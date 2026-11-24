@@ -11,7 +11,12 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.5",
+    "browsers": "^1.0.2",
+    "chrome": "^0.1.0",
+    "install": "^0.13.0",
     "lucide-react": "^1.78.0",
+    "npx": "^10.2.2",
+    "puppeteer": "^25.18.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwindcss": "^4.3.5"
