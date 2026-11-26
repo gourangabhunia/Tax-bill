@@ -229,13 +229,13 @@ const initialForm = {
   },
 
   bank: {
-    holder: "",
-    name: "",
-    account: "",
-    branchIfsc: "",
+    holder: "TANUSRI ENTERPRISE.",
+    name: "CANARA BANK",
+    account: "95891010001726",
+    branchIfsc: "CNRB0019589",
   },
 
-  declaration: "",
+  declaration: "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
 
   prepared: "",
   verified: "",
