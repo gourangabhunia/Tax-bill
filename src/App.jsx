@@ -1,5 +1,4 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState ,useEffect } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -176,14 +175,14 @@ const emptyItem = () => ({
 const initialForm = {
   supplier: {
     tagline: "",
-    name: "",
-    address: "",
-    phone: "",
+    name: "TANUSRI ENTERPRISE",
+    address: "Durgachak, Haldia, East Midnapore, Pin Code-721602",
+    phone: "9836548737",
     udyam: "",
-    gstin: "",
-    state: "",
-    stateCode: "",
-    email: "",
+    gstin: "19BBYPP2239N1ZM",
+    state: "WEST BENGAL",
+    stateCode: "19",
+    email: "tanusri.entr@gmail.com",
   },
 
   consignee: {
@@ -255,6 +254,15 @@ export default function App() {
   const [form, setForm] = useState(initialForm);
   const [message, setMessage] = useState("");
 
+  // Automatically scroll to the next form step
+useEffect(() => {
+  if (showInvoiceForm) {
+    document.getElementById("step-content")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+}, [activeStep, showInvoiceForm]);
   const steps = [
     "Supplier",
     "Buyer",
@@ -267,9 +275,28 @@ export default function App() {
      STATE CHECK
   ===================================================== */
 
+  const supplierStateCode = String(
+    form.supplier.stateCode || ""
+  ).trim();
+
+  const buyerStateCode = String(
+    form.buyer.stateCode || ""
+  ).trim();
+
+  const supplierState = String(
+    form.supplier.state || ""
+  ).trim().toLowerCase();
+
+  const buyerState = String(
+    form.buyer.state || ""
+  ).trim().toLowerCase();
+
   const sameState =
-    form.buyer.state.trim().toLowerCase() ===
-    form.supplier.state.trim().toLowerCase();
+    supplierStateCode && buyerStateCode
+      ? supplierStateCode === buyerStateCode
+      : supplierState !== "" &&
+        buyerState !== "" &&
+        supplierState === buyerState;
 
   /* =====================================================
      PRODUCT-WISE GST CALCULATION
@@ -1797,15 +1824,20 @@ export default function App() {
               description="Tax is grouped by HSN/SAC and GST percentage."
             >
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px] text-sm">
+                <table className="w-full min-w-[760px] text-sm">
                   <thead>
-                    <tr className="border-b bg-slate-50 text-left text-slate-500">
-                      <th className="p-3">HSN/SAC</th>
-                      <th className="p-3 text-right">GST Rate</th>
-                      <th className="p-3 text-right">Taxable</th>
-                      <th className="p-3 text-right">CGST</th>
-                      <th className="p-3 text-right">SGST</th>
-                      <th className="p-3 text-right">IGST</th>
+                    <tr className="border-b bg-slate-50 text-center text-slate-500">
+                      <th className="p-3" rowSpan={2}>HSN/SAC</th>
+                      <th className="p-3" rowSpan={2}>Taxable Value</th>
+                      <th className="p-3" colSpan={2}>CGST</th>
+                      <th className="p-3" colSpan={2}>SGST/UTGST</th>
+                      <th className="p-3" rowSpan={2}>Total Tax Amount</th>
+                    </tr>
+                    <tr className="border-b bg-slate-50 text-slate-500">
+                      <th className="p-3 text-right">Rate</th>
+                      <th className="p-3 text-right">Amount</th>
+                      <th className="p-3 text-right">Rate</th>
+                      <th className="p-3 text-right">Amount</th>
                     </tr>
                   </thead>
 
@@ -1815,52 +1847,24 @@ export default function App() {
                         key={`${group.hsn}-${group.gst}-${index}`}
                         className="border-b border-slate-100"
                       >
-                        <td className="p-3">
-                          {group.hsn || "-"}
-                        </td>
-
-                        <td className="p-3 text-right">
-                          {group.gst}%
-                        </td>
-
-                        <td className="p-3 text-right">
-                          ₹{money(group.taxable)}
-                        </td>
-
-                        <td className="p-3 text-right">
-                          ₹{money(group.cgst)}
-                        </td>
-
-                        <td className="p-3 text-right">
-                          ₹{money(group.sgst)}
-                        </td>
-
-                        <td className="p-3 text-right">
-                          ₹{money(group.igst)}
-                        </td>
+                        <td className="p-3">{group.hsn || "-"}</td>
+                        <td className="p-3 text-right">₹{money(group.taxable)}</td>
+                        <td className="p-3 text-right">{money(group.gst / 2)}%</td>
+                        <td className="p-3 text-right">₹{money(group.cgst)}</td>
+                        <td className="p-3 text-right">{money(group.gst / 2)}%</td>
+                        <td className="p-3 text-right">₹{money(group.sgst)}</td>
+                        <td className="p-3 text-right">₹{money(group.tax)}</td>
                       </tr>
                     ))}
 
                     <tr className="font-bold">
-                      <td className="p-3" colSpan={2}>
-                        Total
-                      </td>
-
-                      <td className="p-3 text-right">
-                        ₹{money(calculations.taxableTotal)}
-                      </td>
-
-                      <td className="p-3 text-right">
-                        ₹{money(calculations.cgst)}
-                      </td>
-
-                      <td className="p-3 text-right">
-                        ₹{money(calculations.sgst)}
-                      </td>
-
-                      <td className="p-3 text-right">
-                        ₹{money(calculations.igst)}
-                      </td>
+                      <td className="p-3">Total</td>
+                      <td className="p-3 text-right">₹{money(calculations.taxableTotal)}</td>
+                      <td className="p-3 text-right">-</td>
+                      <td className="p-3 text-right">₹{money(calculations.cgst)}</td>
+                      <td className="p-3 text-right">-</td>
+                      <td className="p-3 text-right">₹{money(calculations.sgst)}</td>
+                      <td className="p-3 text-right">₹{money(calculations.totalTax)}</td>
                     </tr>
                   </tbody>
                 </table>
